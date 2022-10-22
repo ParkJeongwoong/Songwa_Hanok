@@ -1,17 +1,40 @@
 plugins {
+    id 'org.springframework.boot' version '2.4.1'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'java'
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+group 'com.songwa'
+version '1.0.4-SNAPSHOT-'+new Date().format("yyyyMMddHHmmss")
+sourceCompatibility = 1.9
 
 repositories {
     mavenCentral()
 }
 
+test {
+    useJUnitPlatform()
+}
+
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    // Spring
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+    // Lombok
+    implementation('org.projectlombok:lombok:1.18.24')
+    annotationProcessor('org.projectlombok:lombok:1.18.24')
+    testImplementation('org.projectlombok:lombok:1.18.24')
+    testAnnotationProcessor('org.projectlombok:lombok:1.18.24')
+
+    // JPA
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation("org.mariadb.jdbc:mariadb-java-client")
+    implementation('com.h2database:h2')
+
+    // DB
+    implementation("org.springframework.session:spring-session-jdbc")
+    implementation("org.mariadb.jdbc:mariadb-java-client")
 }
 
 test {
