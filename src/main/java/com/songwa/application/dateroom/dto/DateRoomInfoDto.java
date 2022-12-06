@@ -1,7 +1,7 @@
 package com.songwa.application.dateroom.dto;
 
 import com.songwa.domain.DateRoom;
-import com.songwa.domain.Room;
+import com.songwa.domain.HanokRoom;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -15,12 +15,12 @@ public class DateRoomInfoDto {
     private final long reservationState;
 
     public DateRoomInfoDto(DateRoom entity) {
-        Room room = entity.getRoom();
+        HanokRoom hanokRoom = entity.getHanokRoom();
 
         this.dateRoomId = entity.getDateRoomId();
         this.date = entity.getDate();
-        this.roomId = room.getId();
-        this.roomName = room.getName();
+        this.roomId = hanokRoom.getId();
+        this.roomName = hanokRoom.getName();
         this.reservationState = entity.getReservationState();
     }
 }

@@ -37,6 +37,4 @@ dependencies {
     implementation("org.mariadb.jdbc:mariadb-java-client")
 }
 
-test {
-    useJUnitPlatform()
-}
+targetCompatibility = JavaVersion.VERSION_1_9
