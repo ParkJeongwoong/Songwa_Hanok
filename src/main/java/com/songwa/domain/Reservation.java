@@ -2,10 +2,12 @@ package com.songwa.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Getter
+@NoArgsConstructor
 @Entity
 public class Reservation extends BaseTimeEntity {
     @Id
@@ -14,18 +16,18 @@ public class Reservation extends BaseTimeEntity {
 
     @OneToOne
     @JoinColumn(name = "dateRoom_id", nullable = false)
-    private final DateRoom dateRoom;
+    private DateRoom dateRoom;
 
     @OneToOne
     @JoinColumn(name = "guest_id", nullable = false)
-    private final Guest guest;
+    private Guest guest;
 
-    private final String reservedFrom;
+    private String reservedFrom;
 
     @Builder
-    public Reservation(DateRoom dateRoom, Guest guest, String reservedFrom) {
+    public Reservation(DateRoom dateRoom, Guest guest) {
         this.dateRoom = dateRoom;
         this.guest = guest;
-        this.reservedFrom = reservedFrom;
+        this.reservedFrom = guest.getClass().getSimpleName();
     }
 }

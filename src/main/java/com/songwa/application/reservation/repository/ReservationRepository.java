@@ -1,4 +1,4 @@
-package com.songwa.application.dateroom.repository;
+package com.songwa.application.reservation.repository;
 
 import com.songwa.domain.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,7 +1,7 @@
 package com.songwa.application.room.repository;
 
-import com.songwa.domain.HanokRoom;
+import com.songwa.domain.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RoomRepository extends JpaRepository<HanokRoom, Long> {
+public interface RoomRepository extends JpaRepository<Room, Long> {
 }

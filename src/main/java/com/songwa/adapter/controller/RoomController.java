@@ -1,11 +1,10 @@
 package com.songwa.adapter.controller;
 
 import com.songwa.application.room.dto.RoomInfoDto;
+import com.songwa.application.room.dto.MakeRoomDto;
 import com.songwa.application.room.service.RoomService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,9 +15,14 @@ public class RoomController {
 
     private final RoomService roomService;
 
-    @GetMapping("show-all")
+    // Setting 용도
+    @PostMapping("/")
+    public long makeRoom(@RequestBody MakeRoomDto requestDto) {
+        return roomService.makeRoom(requestDto);
+    }
+
+    @GetMapping("roomList")
     public List<RoomInfoDto> showAllRooms() {
         return roomService.showAllRooms();
     }
-
 }

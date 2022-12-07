@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.Lock;
 import javax.persistence.LockModeType;
 import java.util.List;
 
-public interface DateRoomRepository extends JpaRepository<DateRoom, Long> {
-    @Lock(LockModeType.OPTIMISTIC)
-    List<DateRoom> findAllOrderById();
+public interface DateRoomRepository extends JpaRepository<DateRoom, String> {
+//    @Lock(LockModeType.OPTIMISTIC)
+//    List<DateRoom> findAllOrderByDateRoomId();
+
+    DateRoom findByDateRoomId(String dateRoomId);
 }

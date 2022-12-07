@@ -12,34 +12,16 @@ import java.util.List;
 @RequestMapping("dateroom")
 public class DateRoomController {
 
-    private DateRoomService dateRoomService;
+    private final DateRoomService dateRoomService;
 
-    @GetMapping("show-all")
+    // Setting 용도
+    @PostMapping("/")
+    public String makeDateRoom(@RequestBody MakeDateRoomDto requestDto) throws Exception {
+        return dateRoomService.makeDateRoom(requestDto);
+    }
+
+    @GetMapping("dateRoomList")
     public List<DateRoomInfoDto> showAllDateRooms() {
         return dateRoomService.showAllDateRooms();
     }
-
-    @PostMapping("start-reservation")
-    public void startReservation(@RequestBody makeReservationRequestDto requestDto) {
-        dateRoomService.makeReservation(requestDto);
-    }
-
-    // TEST 용도
-    @PostMapping("make-room")
-    public long makeRoom(@RequestBody makeHanokRoomDto requestDto) {
-        return dateRoomService.makeRoom(requestDto);
-    }
-    @PostMapping("make-dateroom")
-    public String makeDateRoom(@RequestBody makeDateRoomDto requestDto) throws Exception {
-        return dateRoomService.makeDateRoom(requestDto);
-    }
-    @PostMapping("make-reservation-home")
-    public void makeReservationHome(@RequestBody makeReservationHomeRequestDto requestDto) {
-        dateRoomService.makeReservation(requestDto);
-    }
-    @PostMapping("make-reservation-airbnb")
-    public void makeReservationAirbnb(@RequestBody makeReservationAirbnbRequestDto requestDto) {
-        dateRoomService.makeReservation(requestDto);
-    }
-
 }
