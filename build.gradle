@@ -35,6 +35,9 @@ dependencies {
     // DB
     implementation("org.springframework.session:spring-session-jdbc")
     implementation("org.mariadb.jdbc:mariadb-java-client")
+
+    // Logging
+    implementation('org.slf4j:jcl-over-slf4j')
 }
 
 targetCompatibility = JavaVersion.VERSION_1_9

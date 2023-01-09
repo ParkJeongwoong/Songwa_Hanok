@@ -21,8 +21,14 @@ public class RoomService {
     }
 
     @Transactional
+    public void makeRoom(String name, long price, long priceWeekend, long priceHoliday, long priceSpecial) {
+        Room room = Room.builder().name(name).price(price).priceWeekend(priceWeekend).priceHoliday(priceHoliday).priceSpecial(priceSpecial).build();
+        roomRepository.save(room);
+    }
+
+    @Transactional
     public long makeRoom(MakeRoomDto requestDto) {
-        Room room = Room.builder().name(requestDto.getName()).build();
+        Room room = Room.builder().name(requestDto.getName()).price(requestDto.getPrice()).build();
         return roomRepository.save(room).getId();
     }
 }

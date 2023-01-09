@@ -8,9 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MakeRoomDto {
     String name;
+    long price;
 
     @Builder
-    public MakeRoomDto(String name) {
+    public MakeRoomDto(String name, long price) {
         this.name = name;
+        this.price = price;
     }
 }

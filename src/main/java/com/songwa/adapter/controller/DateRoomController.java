@@ -14,14 +14,13 @@ public class DateRoomController {
 
     private final DateRoomService dateRoomService;
 
-    // Setting 용도
-    @PostMapping("/")
-    public String makeDateRoom(@RequestBody MakeDateRoomDto requestDto) throws Exception {
-        return dateRoomService.makeDateRoom(requestDto);
-    }
-
-    @GetMapping("dateRoomList")
+    @GetMapping("show-all")
     public List<DateRoomInfoDto> showAllDateRooms() {
         return dateRoomService.showAllDateRooms();
+    }
+
+    @GetMapping("list/{year}/{month}")
+    public List<DateRoomInfoDto> show2MonthsDateRooms(@PathVariable("year") int year, @PathVariable("month") int month) {
+        return dateRoomService.show2MonthsDateRooms(year, month);
     }
 }

@@ -17,7 +17,7 @@ public class ReservationController {
 
     private final ReservationService reservationService;
 
-    // Setting 용도
+    // Test 용도
     @PostMapping("/home")
     public GeneralResponseDto makeReservationHome(@RequestBody MakeReservationHomeRequestDto requestDto) {
         return reservationService.makeReservation(requestDto);

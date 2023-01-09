@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 
 import javax.persistence.LockModeType;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface DateRoomRepository extends JpaRepository<DateRoom, String> {
@@ -12,4 +13,5 @@ public interface DateRoomRepository extends JpaRepository<DateRoom, String> {
 //    List<DateRoom> findAllOrderByDateRoomId();
 
     DateRoom findByDateRoomId(String dateRoomId);
+    List<DateRoom> findAllByDateBetween(LocalDate startDate, LocalDate endDate);
 }
