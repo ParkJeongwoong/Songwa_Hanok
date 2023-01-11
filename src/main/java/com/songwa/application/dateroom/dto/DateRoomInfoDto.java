@@ -21,6 +21,6 @@ public class DateRoomInfoDto {
         this.roomId = room.getId();
         this.roomName = room.getName();
         this.price = entity.getReal_price();
-        this.reservationState = entity.getReservationState();
+        this.reservationState = entity.getRoomReservationState();
     }
 }

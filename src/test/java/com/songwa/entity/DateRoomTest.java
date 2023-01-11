@@ -30,11 +30,11 @@ public class DateRoomTest {
                 .build();
 
         // When
-        dateRoom1.setToReservation();
+        dateRoom1.setStateBooking();
 
         // Then
-        assertThat(dateRoom1.getReservationState()).isEqualTo(-1);
-        assertThat(dateRoom2.getReservationState()).isEqualTo(0);
+        assertThat(dateRoom1.getRoomReservationState()).isEqualTo(1);
+        assertThat(dateRoom2.getRoomReservationState()).isEqualTo(0);
     }
 
 }

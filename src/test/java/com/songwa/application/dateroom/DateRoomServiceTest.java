@@ -68,7 +68,7 @@ public class DateRoomServiceTest {
         Room room = roomRepository.findById(roomId2).orElseThrow(()->new Exception("존재하지 않는 방입니다."));
         assertThat(dateRoom.getDate()).isEqualTo(now);
         assertThat(dateRoom.getRoom()).isEqualTo(room);
-        assertThat(dateRoom.getReservationState()).isEqualTo(0);
+        assertThat(dateRoom.getRoomReservationState()).isEqualTo(0);
     }
 
     @Test

@@ -14,7 +14,7 @@ public class RoomController {
 
     private final RoomService roomService;
 
-    @GetMapping("roomList")
+    @GetMapping("show-all")
     public List<RoomInfoDto> showAllRooms() {
         return roomService.showAllRooms();
     }

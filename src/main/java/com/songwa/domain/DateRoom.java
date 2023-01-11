@@ -1,6 +1,6 @@
 package com.songwa.domain;
 
-import com.songwa.application.dateroom.etc.exception.reservationException;
+import com.songwa.application.dateroom.etc.exception.RoomReservationException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,24 +30,36 @@ public class DateRoom {
     private int priceType; // 0 : 평일, 1 : 주말, 2 : 연휴, 3 : 특별가
 
     @Column(nullable = false)
-    private long reservationState; // 0 : 미예약, -1 : 예약 완료
+    private long roomReservationState; // 0 : 예약 가능, 1 : 예약 증, 2 : 예약 완료
 
     @Builder
     DateRoom(LocalDate date, Room room) {
         this.date = date;
         this.room = room;
-        this.reservationState = 0;
+        this.roomReservationState = 0;
         this.dateRoomId = date.toString() + "&&" + room.getId();
         setPriceType();
         setRealPrice();
     }
 
-    public void setToReservation() throws reservationException {
-        if (this.reservationState == 0) {
-            this.reservationState = -1;
+    public void setStateBooking() throws RoomReservationException {
+        if (this.roomReservationState == 0) {
+            this.roomReservationState = 1;
         } else {
-            throw new reservationException("이미 예약된 날짜입니다.");
+            throw new RoomReservationException("예약이 불가능한 날짜입니다.");
         }
+    }
+
+    public void setStateBooked() throws RoomReservationException {
+        if (this.roomReservationState == 1) {
+            this.roomReservationState = 2;
+        } else {
+            throw new RoomReservationException("예약 중인 날짜가 아닙니다.");
+        }
+    }
+
+    public void resetState() {
+        this.roomReservationState = 0;
     }
 
     public long changePriceType(int priceType) {

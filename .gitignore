@@ -1,6 +1,7 @@
 # Project exclude paths
 .gradle
 .idea
+application-env.properties
 
 build/
 out/
