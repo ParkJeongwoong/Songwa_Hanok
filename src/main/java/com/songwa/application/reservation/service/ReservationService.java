@@ -23,12 +23,13 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
 
     @Transactional
-    public synchronized GeneralResponseDto makeReservation(MakeReservationRequestDto requestDto) {
+    public GeneralResponseDto makeReservation(MakeReservationRequestDto requestDto) {
         // Todo : 동시성 테스트
         try {
             log.info("예약 시작 : {}", requestDto.getGuestName());
             DateRoom dateRoom = dateRoomRepository.findByDateRoomId(requestDto.getDateRoomId());
             dateRoom.setStateBooking();
+            dateRoomRepository.save(dateRoom);
 
             Guest guest = requestDto.makeGuest();
             Reservation reservation = Reservation.builder()

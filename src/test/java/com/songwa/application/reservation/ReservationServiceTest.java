@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -108,15 +109,19 @@ public class ReservationServiceTest {
         log.info("makeReservation 동시성 테스트 시작");
         // Given
         log.info("makeReservation 동시성 테스트 준비");
-        int numberOfThreads = 2;
+        int numberOfThreads = 4;
         ExecutorService service = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
 
-        String guestName1 = "jeongwoong";
-        String guestName2 = "chaewoong";
+        String guestName1 = "jw";
+        String guestName2 = "chw";
+        String guestName3 = "dad";
+        String guestName4 = "mom";
         String phoneNumber = "010-1234-5678";
         MakeReservationHomeRequestDto requestDto1 = new MakeReservationHomeRequestDto(dateRoom1Id, guestName1, phoneNumber);
         MakeReservationHomeRequestDto requestDto2 = new MakeReservationHomeRequestDto(dateRoom1Id, guestName2, phoneNumber);
+        MakeReservationHomeRequestDto requestDto3 = new MakeReservationHomeRequestDto(dateRoom1Id, guestName3, phoneNumber);
+        MakeReservationHomeRequestDto requestDto4 = new MakeReservationHomeRequestDto(dateRoom1Id, guestName4, phoneNumber);
 
         // When
         log.info("makeReservation 동시성 테스트 진행");
@@ -128,21 +133,38 @@ public class ReservationServiceTest {
             reservationService.makeReservation(requestDto2);
             latch.countDown();
         });
+        service.execute(() -> {
+            reservationService.makeReservation(requestDto3);
+            latch.countDown();
+        });
+        service.execute(() -> {
+            reservationService.makeReservation(requestDto4);
+            latch.countDown();
+        });
         latch.await();
 
         // Then
         log.info("makeReservation 동시성 테스트 결과 검증");
         List<Reservation> reservations = reservationRepository.findAll();
-        DateRoom dateRoom = dateRoomRepository.findByDateRoomId(dateRoom1Id);
+        DateRoom dateRoom = dateRoomRepository.findById(dateRoom1Id).orElseThrow(NoSuchElementException::new);
+        log.info("DateRoom 상태 : {} {}", dateRoom.getDateRoomId(), dateRoom.getRoomReservationState());
 
+        Reservation reservation1 = reservations.get(0);
+        log.info("Reservation1 결과 : {} {} {}", reservation1.getGuest().getName(), reservation1.getDateRoom().getDateRoomId(), reservation1.getReservationState());
         if (reservations.size()>1) {
-            Reservation reservation1 = reservations.get(0);
             Reservation reservation2 = reservations.get(1);
-            log.info("Reservation1 결과 : {} {} {}", reservation1.getGuest().getName(), reservation1.getDateRoom().getDateRoomId(), reservation1.getReservationState());
             log.info("Reservation2 결과 : {} {} {}", reservation2.getGuest().getName(), reservation2.getDateRoom().getDateRoomId(), reservation2.getReservationState());
-            log.info("DateRoom 상태 : {} {}", dateRoom.getDateRoomId(), dateRoom.getRoomReservationState());
-
             Assertions.assertThat(reservation1.getReservationState()).isNotEqualTo(reservation2.getReservationState());
+        }
+        if (reservations.size()>2) {
+            Reservation reservation3 = reservations.get(2);
+            log.info("Reservation3 결과 : {} {} {}", reservation3.getGuest().getName(), reservation3.getDateRoom().getDateRoomId(), reservation3.getReservationState());
+            Assertions.assertThat(reservation1.getReservationState()).isNotEqualTo(reservation3.getReservationState());
+        }
+        if (reservations.size()>3) {
+            Reservation reservation4 = reservations.get(3);
+            log.info("Reservation4 결과 : {} {} {}", reservation4.getGuest().getName(), reservation4.getDateRoom().getDateRoomId(), reservation4.getReservationState());
+            Assertions.assertThat(reservation1.getReservationState()).isNotEqualTo(reservation4.getReservationState());
         }
     }
 
