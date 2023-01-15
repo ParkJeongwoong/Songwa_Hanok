@@ -11,6 +11,8 @@ import com.songwa.domain.Guest;
 import com.songwa.domain.Reservation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.StaleObjectStateException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +26,6 @@ public class ReservationService {
 
     @Transactional
     public GeneralResponseDto makeReservation(MakeReservationRequestDto requestDto) {
-        // Todo : 동시성 테스트
         try {
             log.info("예약 시작 : {}", requestDto.getGuestName());
             DateRoom dateRoom = dateRoomRepository.findByDateRoomId(requestDto.getDateRoomId());
@@ -36,9 +37,9 @@ public class ReservationService {
                     .dateRoom(dateRoom)
                     .guest(guest)
                     .build();
-            // Todo : 스케쥴러를 이용한 주기적 확인 (취소 작업)
-
             guestRepository.save(guest);
+
+            // Todo : 스케쥴러를 이용한 주기적 확인 (취소 작업)
             long reservationId = reservationRepository.save(reservation).getId();
 
             log.info("{} 고객님의 예약이 완료되었습니다.", requestDto.getGuestName());
@@ -48,7 +49,13 @@ public class ReservationService {
                     .message("예약에 성공했습니다.")
                     .build();
         } catch (RoomReservationException e) {
-            log.error("예약된 날짜 에러", e);
+            log.error("예약된 날짜 에러 - {}", requestDto.getGuestName(), e);
+            return GeneralResponseDto.builder()
+                    .successYN("N")
+                    .message("이미 예약된 날짜입니다.")
+                    .build();
+        } catch (ObjectOptimisticLockingFailureException | StaleObjectStateException e) {
+            log.error("예약된 날짜 에러(낙관적 락) - {}", requestDto.getGuestName(), e);
             return GeneralResponseDto.builder()
                     .successYN("N")
                     .message("이미 예약된 날짜입니다.")

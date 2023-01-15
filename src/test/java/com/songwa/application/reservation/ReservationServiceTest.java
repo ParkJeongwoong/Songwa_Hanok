@@ -12,10 +12,7 @@ import com.songwa.domain.Reservation;
 import com.songwa.domain.Room;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,7 +47,7 @@ public class ReservationServiceTest {
     String dateRoom2Id;
 
     @BeforeAll
-    public void setup() {
+    public void firstSetup() {
         String roomName1 = "왼쪽방";
         String roomName2 = "오른쪽방";
         Room room1 = Room.builder().name(roomName1).build();
@@ -64,6 +61,14 @@ public class ReservationServiceTest {
         dateRoom2Id = dateRoomRepository.save(dateRoom2).getDateRoomId();
     }
 
+    @AfterEach
+    public void cleanup() {
+        reservationRepository.deleteAll();
+        List<DateRoom> dateRooms = dateRoomRepository.findAll();
+        dateRooms.forEach(DateRoom::resetState);
+        dateRoomRepository.saveAll(dateRooms);
+    }
+
     @AfterAll
     public void teardown() {
         reservationRepository.deleteAll();
@@ -72,7 +77,6 @@ public class ReservationServiceTest {
     }
 
     @Test
-    @Transactional
     public void test_makeReservation() {
         log.info("makeReservation 테스트 시작");
         // Given
@@ -90,17 +94,17 @@ public class ReservationServiceTest {
 
         // Then
         log.info("makeReservation 테스트 결과 검증");
-        Reservation reservation1 = reservationRepository.findById(reservationId1).orElse(null);
-        Reservation reservation2 = reservationRepository.findById(reservationId2).orElse(null);
-        DateRoom dateRoom1 = dateRoomRepository.findByDateRoomId(dateRoom1Id);
-        DateRoom dateRoom2 = dateRoomRepository.findByDateRoomId(dateRoom2Id);
+        Reservation reservation1 = reservationRepository.findById(reservationId1).orElseThrow(NoSuchElementException::new);
+        Reservation reservation2 = reservationRepository.findById(reservationId2).orElseThrow(NoSuchElementException::new);
+        DateRoom dateRoom1 = dateRoomRepository.findById(dateRoom1Id).orElseThrow(NoSuchElementException::new);
+        DateRoom dateRoom2 = dateRoomRepository.findById(dateRoom2Id).orElseThrow(NoSuchElementException::new);
         assert reservation1 != null;
         assertThat(reservation1.getReservedFrom()).isEqualTo("GuestHome");
-        assertThat(reservation1.getDateRoom()).isEqualTo(dateRoom1);
+        assertThat(reservation1.getDateRoom().getDateRoomId()).isEqualTo(dateRoom1.getDateRoomId());
         assertThat(reservation1.getGuest().getName()).isEqualTo(guestName1);
         assert reservation2 != null;
         assertThat(reservation2.getReservedFrom()).isEqualTo("GuestAirbnb");
-        assertThat(reservation2.getDateRoom()).isEqualTo(dateRoom2);
+        assertThat(reservation2.getDateRoom().getDateRoomId()).isEqualTo(dateRoom2.getDateRoomId());
         assertThat(reservation2.getGuest().getName()).isEqualTo(guestName2);
     }
 
@@ -126,19 +130,35 @@ public class ReservationServiceTest {
         // When
         log.info("makeReservation 동시성 테스트 진행");
         service.execute(() -> {
-            reservationService.makeReservation(requestDto1);
+            try {
+                reservationService.makeReservation(requestDto1);
+            } catch (Exception e) {
+                log.error("동시성 테스트 예외 (1)", e);
+            }
             latch.countDown();
         });
         service.execute(() -> {
-            reservationService.makeReservation(requestDto2);
+            try {
+                reservationService.makeReservation(requestDto2);
+            } catch (Exception e) {
+                log.error("동시성 테스트 예외 (2)", e);
+            }
             latch.countDown();
         });
         service.execute(() -> {
-            reservationService.makeReservation(requestDto3);
+            try {
+                reservationService.makeReservation(requestDto3);
+            } catch (Exception e) {
+                log.error("동시성 테스트 예외 (3)", e);
+            }
             latch.countDown();
         });
         service.execute(() -> {
-            reservationService.makeReservation(requestDto4);
+            try {
+                reservationService.makeReservation(requestDto4);
+            } catch (Exception e) {
+                log.error("동시성 테스트 예외 (4)", e);
+            }
             latch.countDown();
         });
         latch.await();
@@ -148,6 +168,7 @@ public class ReservationServiceTest {
         List<Reservation> reservations = reservationRepository.findAll();
         DateRoom dateRoom = dateRoomRepository.findById(dateRoom1Id).orElseThrow(NoSuchElementException::new);
         log.info("DateRoom 상태 : {} {}", dateRoom.getDateRoomId(), dateRoom.getRoomReservationState());
+        log.info("예약 성공한 숫자 : {}", reservations.size());
 
         Reservation reservation1 = reservations.get(0);
         log.info("Reservation1 결과 : {} {} {}", reservation1.getGuest().getName(), reservation1.getDateRoom().getDateRoomId(), reservation1.getReservationState());

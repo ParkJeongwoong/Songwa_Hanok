@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface DateRoomRepository extends JpaRepository<DateRoom, String> {
+//    @Lock(LockModeType.OPTIMISTIC)
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     DateRoom findByDateRoomId(String dateRoomId);
     List<DateRoom> findAllByDateBetween(LocalDate startDate, LocalDate endDate);

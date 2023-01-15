@@ -32,6 +32,9 @@ public class DateRoom {
     @Column(nullable = false)
     private long roomReservationState; // 0 : 예약 가능, 1 : 예약 증, 2 : 예약 완료
 
+//    @Version
+//    private long version;
+
     @Builder
     DateRoom(LocalDate date, Room room) {
         this.date = date;
