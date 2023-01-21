@@ -5,6 +5,7 @@ import com.songwa.application.dateroom.etc.exception.RoomReservationException;
 import com.songwa.application.dateroom.repository.DateRoomRepository;
 import com.songwa.application.guest.repository.GuestRepository;
 import com.songwa.application.reservation.dto.MakeReservationRequestDto;
+import com.songwa.application.reservation.etc.scheduler.ReservationScheduler;
 import com.songwa.application.reservation.repository.ReservationRepository;
 import com.songwa.domain.DateRoom;
 import com.songwa.domain.Guest;
@@ -20,9 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class ReservationService {
+
     private final DateRoomRepository dateRoomRepository;
     private final GuestRepository guestRepository;
     private final ReservationRepository reservationRepository;
+    private final ReservationScheduler reservationScheduler;
 
     @Transactional
     public GeneralResponseDto makeReservation(MakeReservationRequestDto requestDto) {
@@ -39,8 +42,8 @@ public class ReservationService {
                     .build();
             guestRepository.save(guest);
 
-            // Todo : 스케쥴러를 이용한 주기적 확인 (취소 작업)
             long reservationId = reservationRepository.save(reservation).getId();
+            reservationScheduler.add(reservationId);
 
             log.info("{} 고객님의 예약이 완료되었습니다.", requestDto.getGuestName());
             return GeneralResponseDto.builder()
@@ -62,4 +65,5 @@ public class ReservationService {
                     .build();
         }
     }
+
 }

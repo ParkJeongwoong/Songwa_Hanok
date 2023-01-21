@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -46,7 +45,7 @@ public class Reservation extends BaseTimeEntity {
     }
 
     public void setStateTimeOut() throws ReservationException {
-        if (this.reservationState == 0 && checkTimeOut()) {
+        if (this.reservationState == 0) {
             this.reservationState = -1;
         } else {
             throw new ReservationException("결제 대기 예약이 아닙니다.");
@@ -59,11 +58,5 @@ public class Reservation extends BaseTimeEntity {
         } else {
             throw new ReservationException("결제가 완료된 예약이 아닙니다.");
         }
-    }
-
-    public boolean checkTimeOut() {
-        LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime expirationTime = super.getCreatedDate().plusMinutes(30);
-        return currentTime.isAfter(expirationTime);
     }
 }

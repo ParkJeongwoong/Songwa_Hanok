@@ -6,6 +6,7 @@ import com.songwa.application.room.repository.RoomRepository;
 import com.songwa.domain.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,19 +36,28 @@ public class DateRoomService extends Thread {
     public void make3MonthsDateRoom() {
         LocalDate date = LocalDate.now();
         log.info("TODAY : {}", date);
-        int month = date.getMonth().getValue();
-        int endMonth = month+3;
-        while (month < endMonth) {
+//        int month = date.getMonth().getValue();
+//        int endMonth = month+3;
+        for (int i=0;i<90;i++) {
             try {
                 makeDateRoom(2, date);
                 makeDateRoom(1, date);
             } catch (Exception e) {
-                log.error("초기 3개월치 방 생성 중 에러 발생", e);
+                log.error("초기 3개월치 방 날짜 생성 중 에러 발생", e);
             }
-
             date = date.plusDays(1);
-            month = date.getMonth().getValue();
         }
+//        while (month < endMonth) {
+//            try {
+//                makeDateRoom(2, date);
+//                makeDateRoom(1, date);
+//            } catch (Exception e) {
+//                log.error("초기 3개월치 방 날짜 생성 중 에러 발생", e);
+//            }
+//
+//            date = date.plusDays(1);
+//            month = date.getMonth().getValue();
+//        }
         log.info("Last Day : {}", date);
     }
 

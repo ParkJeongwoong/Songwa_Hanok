@@ -13,19 +13,9 @@ import java.util.TimeZone;
 @SpringBootApplication
 public class Application {
 
-    private final RoomService roomService;
-    private final DateRoomService dateRoomService;
-
     @PostConstruct
     void setKST() {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
-    }
-
-    @PostConstruct
-    public void init() {
-        roomService.makeRoom("A", 250000, 300000, 330000, 220000);
-        roomService.makeRoom("B", 250000, 300000, 330000, 220000);
-        dateRoomService.make3MonthsDateRoom();
     }
 
     public static void main(String[] args) {

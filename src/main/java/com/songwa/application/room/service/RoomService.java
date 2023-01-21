@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class RoomService {
+
     private final RoomRepository roomRepository;
 
     public List<RoomInfoDto> showAllRooms() {
@@ -31,4 +32,5 @@ public class RoomService {
         Room room = Room.builder().name(requestDto.getName()).price(requestDto.getPrice()).build();
         return roomRepository.save(room).getId();
     }
+
 }
