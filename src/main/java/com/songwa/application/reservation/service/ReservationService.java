@@ -5,7 +5,7 @@ import com.songwa.application.dateroom.etc.exception.RoomReservationException;
 import com.songwa.application.dateroom.repository.DateRoomRepository;
 import com.songwa.application.guest.repository.GuestRepository;
 import com.songwa.application.reservation.dto.MakeReservationRequestDto;
-import com.songwa.application.reservation.etc.scheduler.ReservationScheduler;
+import com.songwa.application.reservation.etc.eventLoop.ReservationHandler;
 import com.songwa.application.reservation.repository.ReservationRepository;
 import com.songwa.domain.DateRoom;
 import com.songwa.domain.Guest;
@@ -25,7 +25,7 @@ public class ReservationService {
     private final DateRoomRepository dateRoomRepository;
     private final GuestRepository guestRepository;
     private final ReservationRepository reservationRepository;
-    private final ReservationScheduler reservationScheduler;
+    private final ReservationHandler reservationHandler;
 
     @Transactional
     public GeneralResponseDto makeReservation(MakeReservationRequestDto requestDto) {
@@ -43,7 +43,7 @@ public class ReservationService {
             guestRepository.save(guest);
 
             long reservationId = reservationRepository.save(reservation).getId();
-            reservationScheduler.add(reservationId);
+            reservationHandler.add(reservationId);
 
             log.info("{} 고객님의 예약이 완료되었습니다.", requestDto.getGuestName());
             return GeneralResponseDto.builder()

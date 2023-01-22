@@ -1,6 +1,5 @@
 package com.songwa.application.reservation;
 
-import com.songwa.application.common.dto.GeneralResponseDto;
 import com.songwa.application.dateroom.repository.DateRoomRepository;
 import com.songwa.application.reservation.dto.MakeReservationAirbnbRequestDto;
 import com.songwa.application.reservation.dto.MakeReservationHomeRequestDto;
@@ -17,14 +16,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -189,4 +189,55 @@ public class ReservationServiceTest {
         }
     }
 
+    @Test
+    public void test_async() throws InterruptedException {
+        ExecutorService service = Executors.newFixedThreadPool(3);
+
+        log.info("STEP 0 - Thread {}개 / {}", ((ThreadPoolExecutor) service).getPoolSize(), LocalDateTime.now().toLocalTime());
+        service.submit(()->{
+            new async_test_object().sleepTest(1);
+            throw new IllegalArgumentException();
+        });
+        service.submit(()->{
+            new async_test_object().sleepTest(2);
+            throw new IllegalArgumentException();
+        });
+        service.submit(()->{
+            new async_test_object().sleepTest(3);
+            throw new IllegalArgumentException();
+        });
+        log.info("STEP 1 - Thread {}개 / {}", ((ThreadPoolExecutor) service).getPoolSize(), LocalDateTime.now().toLocalTime());
+        // 1초 뒤 추가 작업
+        Thread.sleep(1000);
+        service.submit(()->{
+            try {
+                new async_test_object().sleepTest(4);
+            } catch (InterruptedException e) {
+                log.error("InterruptedException 발생", e);
+            }
+        });
+        log.info("STEP 2 - Thread {}개 / {}", ((ThreadPoolExecutor) service).getPoolSize(), LocalDateTime.now().toLocalTime());
+        // 1초 뒤 추가 작업
+        Thread.sleep(1000);
+        service.submit(()->{
+            try {
+                new async_test_object().sleepTest(5);
+            } catch (InterruptedException e) {
+                log.error("InterruptedException 발생", e);
+            }
+        });
+        log.info("STEP 3 - Thread {}개 / {}", ((ThreadPoolExecutor) service).getPoolSize(), LocalDateTime.now().toLocalTime());
+        Thread.sleep(10000);
+        log.info("STEP 4 - Thread {}개 / {}", ((ThreadPoolExecutor) service).getPoolSize(), LocalDateTime.now().toLocalTime());
+
+        assertThat(((ThreadPoolExecutor) service).getPoolSize()).isEqualTo(3);
+    }
+
+    private static class async_test_object {
+        public void sleepTest(long id) throws InterruptedException {
+            log.info("TEST START, ID : {} / {}", id, LocalDateTime.now().toLocalTime());
+            Thread.sleep(5000);
+            log.info("TEST END, ID : {} / {}", id, LocalDateTime.now().toLocalTime());
+        }
+    }
 }

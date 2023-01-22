@@ -1,7 +1,5 @@
 package com.songwa;
 
-import com.songwa.application.dateroom.service.DateRoomService;
-import com.songwa.application.room.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
